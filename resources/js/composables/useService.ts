@@ -1,23 +1,23 @@
-import { Pagination } from '@/interface/paginacion';
-import { UserResource } from '@/pages/panel/user/interface/User';
-import { UserServices } from '@/services/userServices';
 import { onMounted, reactive } from 'vue';
+import { ServiceResource } from '@/pages/panel/service/interface/Service';
+import { Pagination } from '@/interface/paginacion';
+import { ServiceServices } from '@/services/serviceServices';
 
-export const useUser = () => {
+export const useService = () => {
     const principal = reactive<{
-        userList: UserResource[];
+        serviceList: ServiceResource[];
         paginacion: Pagination;
         loading: boolean;
         filter: string;
-        idUser: number;
+        idService: number;
         statusModal: {
             register: boolean;
             update: boolean;
             delete: boolean;
         };
-        userData: UserResource;
+        serviceData: ServiceResource;
     }>({
-        userList: [],
+        serviceList: [],
         paginacion: {
             total: 0,
             current_page: 0,
@@ -28,43 +28,44 @@ export const useUser = () => {
         },
         loading: false,
         filter: '',
-        idUser: 0,
+        idService: 0,
         statusModal: {
             register: false,
             update: false,
             delete: false,
         },
-        userData: {
+        serviceData: {
             id: 0,
             name: '',
-            email: '',
-            username: '',
-            status: true,
-            created_at: '',
+            cost: 0,
+            ini_date: '',
+            state: true,
         },
     });
-    // loading users
-    const loadingUsers = async (page: number = 1, name: string = '', status: boolean = true) => {
+
+    // loading services
+    const loadingServices = async (page: number = 1, name: string = '', status: boolean = true) => {
         if (status) {
             principal.loading = true;
             try {
-                const response = await UserServices.index(page, name);
-                principal.userList = response.users;
+                const response = await ServiceServices.index(page, name);
+                principal.serviceList = response.services;
                 principal.paginacion = response.pagination;
                 console.log(response);
             } catch (error) {
                 console.error(error);
-            }finally{
+            } finally {
                 principal.loading = false;
             }
         }
     };
 
     onMounted(() => {
-        loadingUsers();
+        loadingServices();
     });
+
     return {
         principal,
-        loadingUsers,
+        loadingServices,
     };
 };
